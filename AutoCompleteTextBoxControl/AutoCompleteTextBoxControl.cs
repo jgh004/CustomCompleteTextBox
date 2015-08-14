@@ -11,28 +11,39 @@ using System.Windows.Forms;
 namespace ExtLibrary
 {
 	[ToolboxBitmap( typeof( ComboBox ) )]
-	[ToolboxItem( true)]
-	public partial class AutoCompleteTextBox: TextBox
-    {
-		private ListBox view = new ListBox();
+	[ToolboxItem( true )]
+	public partial class AutoCompleteTextBox : TextBox
+	{
+		private ListBox box;
+		private ToolStripControlHost host;
+		private ToolStripDropDown drop;
 
 		/// <summary>
-		/// 获取自动完成列表
+		/// 获取数据集合
 		/// </summary>
-		public ListBox DropDownList
+		public ListBox.ObjectCollection Items
 		{
 			get
 			{
-				return this.view;
+				return this.box.Items;
 			}
 		}
 
+		/// <summary>
+		/// 构造函数
+		/// </summary>
 		public AutoCompleteTextBox() : base()
 		{
 			this.InitControl();
 		}
 
 
+		protected override void InitLayout()
+		{
+			base.InitLayout();
+
+			this.box.Width = this.Width - 2;
+		}
 
 		protected override void OnGotFocus( EventArgs e )
 		{
@@ -51,17 +62,47 @@ namespace ExtLibrary
 
 		private void InitControl()
 		{
-			this.view.Width = this.Width;
-			this.view.Font = this.Font;
-			this.view.IntegralHeight = false;
+			this.box = new ListBox();
+			this.box.Margin = Padding.Empty;
+			this.box.BorderStyle = BorderStyle.None;
+			this.box.TabStop = false;
+			this.box.SelectionMode = SelectionMode.One;
+			this.box.IntegralHeight = false;
+            this.box.MouseMove += Box_MouseMove;
+
+			this.host = new ToolStripControlHost( box );
+			this.host.Margin = Padding.Empty;
+			this.host.Padding = Padding.Empty;
+			this.host.AutoSize = false;
+			this.host.MouseEnter += Host_MouseEnter;
+
+			this.drop = new ToolStripDropDown();
+			this.drop.Items.Add( host );
+			this.drop.Margin = Padding.Empty;
+			this.drop.Padding = new Padding(1);
+			this.drop.ShowItemToolTips = false;
+			this.drop.TabStop = false;
 		}
 
-		private void ShowList()
+		private void Host_MouseEnter( object sender, EventArgs e )
 		{
+			//MessageBox.Show("host");
+		}
+
+		private void Box_MouseMove( object sender, MouseEventArgs e )
+		{
+			this.box.SelectedIndex = this.box.IndexFromPoint( e.Location );
+		}
+
+		public void ShowList()
+		{
+			this.drop.Show( this, new Point(-2,this.Height-1)  );
+			this.box.Select();
 		}
 
 		private void CloseList()
 		{
+			//this.drop.Close();
 		}
 	}
 }
