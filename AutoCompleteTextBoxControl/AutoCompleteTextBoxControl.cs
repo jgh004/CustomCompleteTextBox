@@ -82,6 +82,21 @@ namespace ExtLibrary
 			this.drop.Padding = new Padding(1);
 			this.drop.ShowItemToolTips = false;
 			this.drop.TabStop = false;
+			this.drop.Closed += Drop_Closed;
+			this.drop.VisibleChanged += Drop_VisibleChanged;
+		}
+
+		private void Drop_VisibleChanged( object sender, EventArgs e )
+		{
+			if ( !this.drop.Visible )
+			{
+				this.box.SelectedIndex = -1;
+			}
+		}
+
+		private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
+		{
+			this.box.SelectedIndex = -1;
 		}
 
 		private void Host_MouseEnter( object sender, EventArgs e )
