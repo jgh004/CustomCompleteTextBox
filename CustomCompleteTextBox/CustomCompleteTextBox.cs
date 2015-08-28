@@ -56,7 +56,7 @@ namespace ExtLibrary
         {
             base.OnLostFocus( e );
 
-            this.CloseList();
+            //this.CloseList();
         }
 
 
@@ -69,6 +69,7 @@ namespace ExtLibrary
             this.box.SelectionMode = SelectionMode.One;
             this.box.IntegralHeight = false;
             this.box.MouseMove += Box_MouseMove;
+            this.box.GotFocus += Box_GotFocus;
 
             this.host = new ToolStripControlHost( box );
             this.host.Margin = Padding.Empty;
@@ -88,6 +89,12 @@ namespace ExtLibrary
             MouseWheelRedirector.Attach( this.box );
         }
 
+        private void Box_GotFocus( object sender, EventArgs e )
+        {
+            this.Text = this.box.SelectedIndex.ToString();
+            this.CloseList();
+        }
+
         private void Box_Click( object sender, EventArgs e )
         {
         }
@@ -102,13 +109,14 @@ namespace ExtLibrary
 
         private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
         {
-            this.Text = this.box.SelectedValue.ToString();
-            this.box.SelectedIndex = -1;
+            //this.Text = this.box.SelectedIndex.ToString();
+            //this.box.SelectedIndex = -1;
         }
 
         private void Box_MouseMove( object sender, MouseEventArgs e )
         {
             this.box.SelectedIndex = this.box.IndexFromPoint( e.Location );
+            this.Text = this.box.SelectedIndex.ToString();
         }
 
         public void ShowList()

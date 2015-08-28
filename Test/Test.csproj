@@ -11,6 +11,7 @@
     <AssemblyName>Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,6 +73,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -88,9 +90,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoCompleteTextBoxControl\AutoCompleteTextBoxControl.csproj">
-      <Project>{87e30024-7c79-482a-963e-43c252c432ee}</Project>
-      <Name>AutoCompleteTextBoxControl</Name>
+    <ProjectReference Include="..\CustomCompleteTextBox\CustomCompleteTextBox.csproj">
+      <Project>{b74c14f8-7b5c-4680-86c7-032d4074c9bd}</Project>
+      <Name>CustomCompleteTextBox</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
