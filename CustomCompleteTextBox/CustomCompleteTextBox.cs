@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace ExtLibrary
 {
@@ -21,12 +22,10 @@ namespace ExtLibrary
         /// <summary>
         /// 获取数据集合
         /// </summary>
-        public ListBox.ObjectCollection Items
+        public List<object> Items
         {
-            get
-            {
-                return this.box.Items;
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -45,23 +44,62 @@ namespace ExtLibrary
             this.box.Width = this.Width - 2;
         }
 
-        protected override void OnGotFocus( EventArgs e )
+        protected override void OnClick( EventArgs e )
         {
-            base.OnGotFocus( e );
-
+            base.OnClick( e );
             this.ShowList();
         }
 
-        protected override void OnLostFocus( EventArgs e )
+        protected override void OnEnter( EventArgs e )
         {
-            base.OnLostFocus( e );
-
-            //this.CloseList();
+            base.OnEnter( e );
+            this.ShowList();
         }
 
+        protected override void OnLeave( EventArgs e )
+        {
+            base.OnLeave( e );
+            this.CloseList();
+        }
+
+        protected override void OnTextChanged( EventArgs e )
+        {
+            base.OnTextChanged( e );
+
+            if ( this.Items != null )
+            {
+                this.box.Items.Clear();
+
+                if ( this.Text == string.Empty )
+                {
+                    this.box.Items.AddRange( this.Items.ToArray() );
+                }
+                else
+                {
+                    List<object> newList = new List<object>();
+
+                    for ( int i = 0; i < this.Items.Count; i++ )
+                    {
+                        object obj = this.Items[i];
+
+                        if ( obj != null )
+                        {
+                            if ( obj.ToString().IndexOf( this.Text, StringComparison.OrdinalIgnoreCase ) >= 0 )
+                            {
+                                newList.Add( obj );
+                            }
+                        }
+                    }
+
+                    this.box.Items.AddRange( newList.ToArray() );
+                }
+            }
+        }
 
         private void InitControl()
         {
+            this.Items = new List<object>();
+
             this.box = new ListBox();
             this.box.Margin = Padding.Empty;
             this.box.BorderStyle = BorderStyle.None;
@@ -69,7 +107,7 @@ namespace ExtLibrary
             this.box.SelectionMode = SelectionMode.One;
             this.box.IntegralHeight = false;
             this.box.MouseMove += Box_MouseMove;
-            this.box.GotFocus += Box_GotFocus;
+            this.box.Click += Box_Click;
 
             this.host = new ToolStripControlHost( box );
             this.host.Margin = Padding.Empty;
@@ -83,49 +121,61 @@ namespace ExtLibrary
             this.drop.Padding = new Padding( 1 );
             this.drop.ShowItemToolTips = false;
             this.drop.TabStop = false;
+            this.drop.Opening += Drop_Opening;
+            this.drop.Opened += Drop_Opened;
+            this.drop.Closing += Drop_Closing;
             this.drop.Closed += Drop_Closed;
-            this.drop.VisibleChanged += Drop_VisibleChanged;
             
             MouseWheelRedirector.Attach( this.box );
         }
 
-        private void Box_GotFocus( object sender, EventArgs e )
+        private void Box_Click( object sender, EventArgs e )
         {
-            this.Text = this.box.SelectedIndex.ToString();
+            this.Text = this.box.SelectedItem.ToString();
             this.CloseList();
         }
 
-        private void Box_Click( object sender, EventArgs e )
+        private void Drop_Opening( object sender, CancelEventArgs e )
+        {
+            this.OnTextChanged( EventArgs.Empty );
+
+            if ( this.box.Items != null && this.Text != string.Empty )
+            {
+                if ( this.box.Items.Contains( this.Text ) )
+                {
+                    this.box.SelectedIndex = this.box.Items.IndexOf( this.Text );
+                }
+            }
+        }
+
+        private void Drop_Opened( object sender, EventArgs e )
         {
         }
 
-        private void Drop_VisibleChanged( object sender, EventArgs e )
+        private void Drop_Closing( object sender, ToolStripDropDownClosingEventArgs e )
         {
-            if ( !this.drop.Visible )
-            {
-                this.box.SelectedIndex = -1;
-            }
         }
 
         private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
         {
-            //this.Text = this.box.SelectedIndex.ToString();
-            //this.box.SelectedIndex = -1;
+            this.SelectAll();
+            this.box.SelectedIndex = -1;
         }
 
         private void Box_MouseMove( object sender, MouseEventArgs e )
         {
             this.box.SelectedIndex = this.box.IndexFromPoint( e.Location );
-            this.Text = this.box.SelectedIndex.ToString();
         }
 
         public void ShowList()
         {
+            //this.drop.AutoClose = false;
             this.drop.Show( this, new Point( -2, this.Height - 1 ) );
         }
 
         private void CloseList()
         {
+            //this.drop.AutoClose = true;
             this.drop.Close();
         }
     }
@@ -213,7 +263,8 @@ namespace ExtLibrary
         }
 
         private const int WM_MOUSEWHEEL = 0x20a;
-        public bool PreFilterMessage( ref System.Windows.Forms.Message m )
+
+        public bool PreFilterMessage( ref Message m )
         {
             if ( currentControl != null && m.Msg == WM_MOUSEWHEEL )
             {

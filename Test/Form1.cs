@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using System.IO;
+using System.Web.Script.Serialization;
+using ExtLibrary;
 
 namespace Test
 {
@@ -25,7 +27,7 @@ namespace Test
 
         private void button1_Click( object sender, EventArgs e )
 		{
-			this.comboBox1.DropDownHeight = 80;
+            this.comboBox1.DropDownHeight = 80;
 
 			for ( char i = 'a'; i < 'z'; i++ )
 			{
@@ -39,7 +41,8 @@ namespace Test
 			}
 
 			this.comboBox1.DroppedDown = true;
-			this.autoCompleteTextBox1.ShowList();
+            
+            this.autoCompleteTextBox1.ShowList();
 
             this.autoCompleteTextBox1.Focus();
         }
