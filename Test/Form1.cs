@@ -32,7 +32,7 @@ namespace Test
 
 			this.comboBox1.DroppedDown = true;
             
-            this.autoCompleteTextBox1.ShowList();
+            this.autoCompleteTextBox1.DropList();
 
             this.autoCompleteTextBox1.Focus();
         }

@@ -43,6 +43,15 @@ namespace ExtLibrary
 	/// </summary>
 	public class MessageFilter : IMessageFilter
 	{
+        /// <summary>
+        /// 获取或设置过滤器的启用状态
+        /// </summary>
+        public bool Enable
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// 获取或设置需要过滤的消息集合
 		/// </summary>
@@ -61,20 +70,16 @@ namespace ExtLibrary
 		/// <summary>
 		/// 默认构造函数
 		/// </summary>
-		public MessageFilter()
-		{
-			this.FilterMessages = new List<int>();
-		}
-
-		/// <summary>
-		/// 默认构造函数
-		/// </summary>
-		/// <param name="filterMessages">指定需要过滤的消息</param>
 		public MessageFilter( params int[] filterMessages )
-			: this()
-		{
-			this.FilterMessages.AddRange( filterMessages );
-		}
+        {
+            this.Enable = true;
+			this.FilterMessages = new List<int>();
+
+            if ( filterMessages != null )
+            {
+                this.FilterMessages.AddRange( filterMessages );
+            }
+        }
 
 
 
@@ -83,11 +88,11 @@ namespace ExtLibrary
 		/// </summary>
 		/// <param name="m"></param>
 		/// <returns></returns>
-		public bool PreFilterMessage( ref Message m )
+		public virtual bool PreFilterMessage( ref Message m )
 		{
 			bool result = false;
 
-			if ( this.FilterMessages != null && FilterMessages.Contains( m.Msg ) )
+			if ( this.Enable && this.FilterMessages != null && FilterMessages.Contains( m.Msg ) )
 			{
 				MessageFilterEventArgs e = new MessageFilterEventArgs();
 				e.CurrentMessage = m;
@@ -104,7 +109,7 @@ namespace ExtLibrary
 		/// 添加需要过滤的消息
 		/// </summary>
 		/// <param name="msg"></param>
-		public void AddFilterMessage( params int[] msg )
+		public virtual void AddFilterMessage( params int[] msg )
 		{
 			this.FilterMessages.AddRange( msg );
 		}
@@ -113,9 +118,9 @@ namespace ExtLibrary
 		/// 引发 FilterMessageEvent 事件
 		/// </summary>
 		/// <param name="e">事件参数</param>
-		protected void OnFilterMessage( MessageFilterEventArgs e )
+		protected virtual void OnFilterMessage( MessageFilterEventArgs e )
 		{
-			if ( this.FilterMessageEvent != null )
+			if ( this.Enable && this.FilterMessageEvent != null )
 			{
 				this.FilterMessageEvent( this, e );
 			}

@@ -42,7 +42,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="WindowsMessage\MessageFilter.cs" />
-    <Compile Include="WindowsMessage\MouseWheelRedirectorFilterHelper.cs" />
+    <Compile Include="WindowsMessage\MouseWheelFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToolStripDropDownExt.cs">
       <SubType>Component</SubType>
