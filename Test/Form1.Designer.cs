@@ -31,7 +31,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.autoCompleteTextBox1 = new ExtLibrary.AutoCompleteTextBox();
+            this.autoCompleteTextBox1 = new ExtLibrary.CustomCompleteTextBox();
             this.SuspendLayout();
             // 
             // textBox1
@@ -88,7 +88,7 @@
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.ComboBox comboBox1;
-		private ExtLibrary.AutoCompleteTextBox autoCompleteTextBox1;
+		private ExtLibrary.CustomCompleteTextBox autoCompleteTextBox1;
     }
 }
 
