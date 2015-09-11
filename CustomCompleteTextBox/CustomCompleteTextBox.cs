@@ -219,7 +219,6 @@ namespace ExtLibrary
 
             if ( !this.drop.Visible )
             {
-                this.BorderStyle = BorderStyle.Fixed3D;
                 Screen screent = Screen.FromControl( this );
                 Point showPoint = new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, this.Height - (this.Size.Height - this.ClientSize.Height) / 2 );
                 ToolStripDropDownDirection direction = this.drop.Height > screent.WorkingArea.Height - this.PointToScreen( showPoint ).Y ? ToolStripDropDownDirection.AboveRight : ToolStripDropDownDirection.BelowRight;
