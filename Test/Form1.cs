@@ -13,29 +13,54 @@ namespace Test
 
 		private void Form1_Load( object sender, EventArgs e )
 		{
+            for ( int i = 'a'; i <= 'z'; i++ )
+            {
+                TestObject obj = new TestObject();
+                obj.id = i;
+                obj.Name = Convert.ToString( (char)i );
+
+                this.comboBox1.Items.Add( obj );
+                this.customCompleteTextBox1.Items.Add( obj );
+            }
+
+            this.comboBox1.DisplayMember = "idAndName";
+            this.comboBox1.ValueMember = "id";
+            this.customCompleteTextBox1.DisplayMember = "idAndName";
+            this.customCompleteTextBox1.ValueMember = "id";
+
+            this.comboBox1.FlatStyle = FlatStyle.Popup;
 		}
 
         private void button1_Click( object sender, EventArgs e )
 		{
-            this.comboBox1.DropDownHeight = 80;
-
-			for ( char i = 'a'; i < 'z'; i++ )
-			{
-                StringBuilder sb = new StringBuilder();
-                for ( int j = 0; j < 8; j++ )
-                {
-                    sb.Append( i );
-                }
-				this.comboBox1.Items.Add( sb.ToString() );
-				this.autoCompleteTextBox1.Items.Add( sb.ToString() );
-			}
-
 			this.comboBox1.DroppedDown = true;
-            
-            this.autoCompleteTextBox1.DropList();
-
-            this.autoCompleteTextBox1.Focus();
+            this.customCompleteTextBox1.DropList();
         }
 		
+        
 	}
+
+
+    public class TestObject
+    {
+        public int id
+        {
+            get;
+            set;
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public string idAndName
+        {
+            get
+            {
+                return this.id.ToString() + "-" + this.Name;
+            }
+        }
+    }
 }

@@ -30,6 +30,10 @@ namespace ExtLibrary
         private bool manualChangeText;
 
         /// <summary>
+        /// 内部使用,用于存储listBox数据
+        /// </summary>
+        private ListBox innerListBox;
+        /// <summary>
         /// 显示候选列表
         /// </summary>
         private ListBox box;
@@ -45,19 +49,57 @@ namespace ExtLibrary
 		/// <summary>
 		/// 获取或设置数据集合
 		/// </summary>
-		public List<object> Items
+		public ListBox.ObjectCollection Items
 		{
-			get;
-			set;
+			get
+            {
+                return this.innerListBox.Items;
+            }
 		}
 
         /// <summary>
-        /// 获取选择的项目
+        /// 获取或设置选择的项目
         /// </summary>
         public object SelectedItem
         {
-            get;
-            internal set;
+            get
+            {
+                return this.innerListBox.SelectedItem;
+            }
+            set
+            {
+                this.innerListBox.SelectedItem = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置显示的属性
+        /// </summary>
+        public string DisplayMember
+        {
+            get
+            {
+                return this.innerListBox.DisplayMember;
+            }
+            set
+            {
+                this.innerListBox.DisplayMember = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置值的属性
+        /// </summary>
+        public string ValueMember
+        {
+            get
+            {
+                return this.innerListBox.ValueMember;
+            }
+            set
+            {
+                this.innerListBox.ValueMember = value;
+            }
         }
 
         /// <summary>
@@ -93,18 +135,21 @@ namespace ExtLibrary
 		}
 
 		protected override void OnClick( EventArgs e )
-		{
-			base.OnClick( e );
+        {
+            base.OnClick( e );
+            this.SelectAll();
+            this.Focus();
 
             if ( this.AutoDrop )
             {
                 this.DropList();
             }
-		}
+        }
 
 		protected override void OnEnter( EventArgs e )
 		{
 			base.OnEnter( e );
+            this.SelectAll();
             this.mouseWheel.Enable = true;
 
             if ( this.AutoDrop )
@@ -132,6 +177,8 @@ namespace ExtLibrary
             {
                 this.DropList();
             }
+
+            this.manualChangeText = true;
         }
 
         //--------------------------------------------------------------------------------
@@ -141,43 +188,43 @@ namespace ExtLibrary
         /// </summary>
         public void DropList()
         {
+            this.box.Items.Clear();
+            this.box.DisplayMember = this.DisplayMember;
+            this.box.ValueMember = this.ValueMember;
+
             if ( this.Items != null )
             {
-                this.box.Items.Clear();
-
                 if ( this.Text == string.Empty )
                 {
-                    this.box.Items.AddRange( this.Items.ToArray() );
+                    this.box.Items.AddRange( this.Items );
                 }
                 else
                 {
-                    List<object> newList = new List<object>();
-
                     for ( int i = 0; i < this.Items.Count; i++ )
                     {
                         object obj = this.Items[i];
 
                         if ( obj != null )
                         {
-                            if ( obj.ToString().IndexOf( this.Text, StringComparison.OrdinalIgnoreCase ) >= 0 )
+                            if ( this.innerListBox.GetItemText( obj ).Contains( this.Text ) )
                             {
-                                newList.Add( obj );
+                                this.box.Items.Add( obj );
                             }
                         }
                     }
-
-                    this.box.Items.AddRange( newList.ToArray() );
                 }
 
-                if ( this.box.Items.Contains( this.Text ) )
-                {
-                    this.box.SelectedIndex = this.box.Items.IndexOf( this.Text );
-                }
+                this.box.SelectedItem = this.SelectedItem;
             }
 
             if ( !this.drop.Visible )
             {
-                this.drop.Show( this, new Point( -2, this.Height - 1 ) );
+                this.BorderStyle = BorderStyle.Fixed3D;
+                Screen screent = Screen.FromControl( this );
+                Point showPoint = new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, this.Height - (this.Size.Height - this.ClientSize.Height) / 2 );
+                ToolStripDropDownDirection direction = this.drop.Height > screent.WorkingArea.Height - this.PointToScreen( showPoint ).Y ? ToolStripDropDownDirection.AboveRight : ToolStripDropDownDirection.BelowRight;
+                showPoint = direction == ToolStripDropDownDirection.BelowRight ? showPoint : new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, 0 - (this.Size.Height - this.ClientSize.Height) / 2 );
+                this.drop.Show( this, showPoint, direction );
             }
         }
 
@@ -196,11 +243,12 @@ namespace ExtLibrary
         /// </summary>
         private void InitControl()
 		{
-			this.Items = new List<object>();
             this.AutoDrop = true;
             this.manualChangeText = false;
+            this.innerListBox = new ListBox();
+            this.innerListBox.SelectionMode = SelectionMode.One;
 
-			this.box = new ListBox();
+            this.box = new ListBox();
 			this.box.Margin = Padding.Empty;
 			this.box.BorderStyle = BorderStyle.None;
 			this.box.TabStop = false;
@@ -226,7 +274,6 @@ namespace ExtLibrary
 			this.drop.ActiveChange += drop_ActiveChange;
 
             this.mouseWheel = new MouseWheelFilter( this.box );
-            //this.mouseWheel.Enable = false;
             this.appClick = new AppClickFilter( () =>
             {
                 if ( this.AutoDrop )
@@ -263,7 +310,7 @@ namespace ExtLibrary
             if ( this.SelectedItem != null )
             {
                 this.manualChangeText = false;
-                this.Text = this.SelectedItem.ToString();
+                this.Text = this.box.GetItemText( this.SelectedItem );
             }
 
             this.CloseList();
@@ -276,7 +323,6 @@ namespace ExtLibrary
         /// <param name="e"></param>
 		private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
 		{
-			this.SelectAll();
 			this.box.SelectedIndex = -1;
 		}
 
