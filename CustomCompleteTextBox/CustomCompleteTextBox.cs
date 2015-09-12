@@ -173,6 +173,25 @@ namespace ExtLibrary
 		{
 			base.OnTextChanged( e );
 
+            if ( this.Items != null )
+            {
+                this.SelectedItem = null;
+
+                for ( int i = 0; i < this.Items.Count; i++ )
+                {
+                    object obj = this.Items[i];
+
+                    if ( obj != null )
+                    {
+                        if ( this.innerListBox.GetItemText( obj ) == this.Text )
+                        {
+                            this.SelectedItem = obj;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if ( this.AutoDrop && this.manualChangeText )
             {
                 this.DropList();
@@ -194,7 +213,7 @@ namespace ExtLibrary
 
             if ( this.Items != null )
             {
-                if ( this.Text == string.Empty )
+                if ( string.IsNullOrEmpty( this.Text ) )
                 {
                     this.box.Items.AddRange( this.Items );
                 }
