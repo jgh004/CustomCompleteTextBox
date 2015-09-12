@@ -38,7 +38,7 @@ namespace ExtLibrary
                     WindowsAPI.SendMessage( c.Handle, e.CurrentMessage.Msg, e.CurrentMessage.WParam, e.CurrentMessage.LParam );
                 }
 
-                e.StopMessage = true;
+                e.StopMessage = false;
             }
         }
     }

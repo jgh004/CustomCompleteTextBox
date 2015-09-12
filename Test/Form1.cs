@@ -21,14 +21,14 @@ namespace Test
 
                 this.comboBox1.Items.Add( obj );
                 this.customCompleteTextBox1.Items.Add( obj );
+                this.listBox1.Items.Add( obj );
             }
 
             this.comboBox1.DisplayMember = "idAndName";
             this.comboBox1.ValueMember = "id";
+            this.comboBox1.DropDownHeight = 80;
             this.customCompleteTextBox1.DisplayMember = "idAndName";
             this.customCompleteTextBox1.ValueMember = "id";
-
-            this.comboBox1.FlatStyle = FlatStyle.Popup;
 		}
 
         private void button1_Click( object sender, EventArgs e )

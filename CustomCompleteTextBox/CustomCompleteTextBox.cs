@@ -27,7 +27,7 @@ namespace ExtLibrary
         /// <summary>
         /// 是否手动设置 Text 文本
         /// </summary>
-        private bool manualChangeText;
+        private bool manualSetText;
 
         /// <summary>
         /// 内部使用,用于存储listBox数据
@@ -170,13 +170,12 @@ namespace ExtLibrary
 		}
 
         protected override void OnTextChanged( EventArgs e )
-		{
-			base.OnTextChanged( e );
+        {
+            base.OnTextChanged( e );
+            this.SelectionStart = this.Text.Length;
 
             if ( this.Items != null )
             {
-                this.SelectedItem = null;
-
                 for ( int i = 0; i < this.Items.Count; i++ )
                 {
                     object obj = this.Items[i];
@@ -192,12 +191,43 @@ namespace ExtLibrary
                 }
             }
 
-            if ( this.AutoDrop && this.manualChangeText )
+            if ( this.AutoDrop )
             {
                 this.DropList();
             }
+        }
 
-            this.manualChangeText = true;
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.Up:
+                case Keys.Down:
+                    e.Handled = true;
+                    break;
+            }
+
+            base.OnKeyDown( e );
+        }
+
+        protected override void WndProc( ref Message m )
+        {
+            if ( m.Msg == 0x100 )
+            {
+                switch ( m.WParam.ToInt32() )
+                {
+                    case 13:
+                    case 38:
+                    case 40:
+                        if ( this.box.Visible )
+                        {
+                            WindowsAPI.SendMessage( this.box.Handle, m.Msg, m.WParam, m.LParam );
+                        }
+                        break;
+                }
+            }
+
+            base.WndProc( ref m );
         }
 
         //--------------------------------------------------------------------------------
@@ -262,9 +292,10 @@ namespace ExtLibrary
         private void InitControl()
 		{
             this.AutoDrop = true;
-            this.manualChangeText = false;
+            this.manualSetText = false;
             this.innerListBox = new ListBox();
             this.innerListBox.SelectionMode = SelectionMode.One;
+            this.innerListBox.SelectedValueChanged += InnerListBox_SelectedValueChanged;
 
             this.box = new ListBox();
 			this.box.Margin = Padding.Empty;
@@ -274,6 +305,7 @@ namespace ExtLibrary
 			this.box.IntegralHeight = false;
 			this.box.MouseMove += Box_MouseMove;
 			this.box.Click += Box_Click;
+            this.box.KeyDown += Box_KeyDown;
 
 			this.host = new ToolStripControlHost( box );
 			this.host.Margin = Padding.Empty;
@@ -289,9 +321,10 @@ namespace ExtLibrary
 			this.drop.ShowItemToolTips = false;
 			this.drop.TabStop = false;
 			this.drop.Closed += Drop_Closed;
-			this.drop.ActiveChange += drop_ActiveChange;
+			this.drop.ActiveChange += Drop_ActiveChange;
 
             this.mouseWheel = new MouseWheelFilter( this.box );
+            this.mouseWheel.Enable = false;
             this.appClick = new AppClickFilter( () =>
             {
                 if ( this.AutoDrop )
@@ -303,18 +336,49 @@ namespace ExtLibrary
             Application.AddMessageFilter( this.appClick );
         }
 
+        private void InnerListBox_SelectedValueChanged( object sender, EventArgs e )
+        {
+            this.Text = this.box.GetItemText( this.SelectedItem );
+        }
+
+
+        /// <summary>
+        /// 关闭下拉列表时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
+        {
+            this.box.SelectedIndex = -1;
+        }
+
         /// <summary>
         /// 下拉列表激活或失去激活状态时引发的事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void drop_ActiveChange( object sender, ActiveChangeEventArgs e )
-		{
-			if ( this.AutoDrop && !e.Active )
-			{
+        private void Drop_ActiveChange( object sender, ActiveChangeEventArgs e )
+        {
+            if ( this.AutoDrop && !e.Active )
+            {
                 this.CloseList();
-			}
-		}
+            }
+        }
+
+        /// <summary>
+        /// 在 listbox 上按下按键时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Box_KeyDown( object sender, KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.Enter:
+                    this.Box_Click( this.box, EventArgs.Empty );
+                    break;
+            }
+        }
 
         /// <summary>
         /// 单击下拉选项
@@ -323,26 +387,14 @@ namespace ExtLibrary
         /// <param name="e"></param>
 		private void Box_Click( object sender, EventArgs e )
 		{
-            this.SelectedItem = this.box.SelectedItem;
-
-            if ( this.SelectedItem != null )
+            if ( this.box.SelectedItem != null )
             {
-                this.manualChangeText = false;
-                this.Text = this.box.GetItemText( this.SelectedItem );
+                this.manualSetText = true;
+                this.SelectedItem = this.box.SelectedItem;
             }
 
             this.CloseList();
         }
-
-        /// <summary>
-        /// 关闭下拉列表时
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-		private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
-		{
-			this.box.SelectedIndex = -1;
-		}
 
         /// <summary>
         /// 鼠标在选项间移动时
