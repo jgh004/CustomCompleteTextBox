@@ -28,10 +28,15 @@ namespace ExtLibrary
         /// 内部使用,用于存储listBox数据
         /// </summary>
         private ListBox innerListBox;
+
         /// <summary>
         /// 显示候选列表
         /// </summary>
         private ListBox box;
+
+        /// <summary>
+        /// 下拉内容宿主窗体
+        /// </summary>
         private ToolStripControlHost host;
 
         /// <summary>
@@ -140,6 +145,10 @@ namespace ExtLibrary
             this.box.Width = this.Width - 2;
         }
 
+        /// <summary>
+        /// 单击文本框时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnClick( EventArgs e )
         {
             base.OnClick( e );
@@ -149,6 +158,10 @@ namespace ExtLibrary
             this.DropList();
         }
 
+        /// <summary>
+        /// 文本框获得焦点时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnEnter( EventArgs e )
         {
             base.OnEnter( e );
@@ -158,6 +171,10 @@ namespace ExtLibrary
             this.DropList();
         }
 
+        /// <summary>
+        /// 文本框失去焦点时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnLeave( EventArgs e )
         {
             base.OnLeave( e );
@@ -165,6 +182,10 @@ namespace ExtLibrary
             this.CloseList();
         }
 
+        /// <summary>
+        /// 文本框内容改变时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnTextChanged( EventArgs e )
         {
             base.OnTextChanged( e );
@@ -176,6 +197,10 @@ namespace ExtLibrary
             this.DropList();
         }
 
+        /// <summary>
+        /// 在文本框按下并释放按键时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnKeyPress( KeyPressEventArgs e )
         {
             //去掉系统提示音
@@ -187,6 +212,10 @@ namespace ExtLibrary
             base.OnKeyPress( e );
         }
 
+        /// <summary>
+        /// 在文本框按下按键时
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnKeyDown( KeyEventArgs e )
         {
             //按上下键时不改变文本框内的光标位置
@@ -201,6 +230,10 @@ namespace ExtLibrary
             base.OnKeyDown( e );
         }
 
+        /// <summary>
+        /// 处理针对文本框的系统消息
+        /// </summary>
+        /// <param name="m"></param>
         protected override void WndProc( ref Message m )
         {
             //上下键,回车键,将消息转发到下拉框
@@ -408,7 +441,10 @@ namespace ExtLibrary
         /// <param name="e"></param>
         private void Drop_ActiveChange( object sender, ActiveChangeEventArgs e )
         {
-            this.CloseList();
+            if ( !e.Active )
+            {
+                this.CloseList();
+            }
         }
 
         /// <summary>

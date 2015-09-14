@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
+using System.IO;
+using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 namespace Test
@@ -13,31 +15,36 @@ namespace Test
 
 		private void Form1_Load( object sender, EventArgs e )
 		{
-            for ( int i = 'a'; i <= 'z'; i++ )
-            {
-                TestObject obj = new TestObject();
-                obj.id = (char)i;
-                obj.Name = Convert.ToString( (char)i );
+            List<Station> stations = new List<Station>();
+            JavaScriptSerializer json = new JavaScriptSerializer();
 
-                this.comboBox1.Items.Add( obj );
-                this.customCompleteTextBox1.Items.Add( obj );
-                this.listBox1.Items.Add( obj );
+            using ( StreamReader sr = File.OpenText( "Stations.txt" ) )
+            {
+                stations = json.Deserialize<List<Station>>( sr.ReadToEnd() );
             }
 
-            this.comboBox1.DisplayMember = "idAndName";
-            this.comboBox1.ValueMember = "id";
-            this.comboBox1.DropDownHeight = 80;
-            this.customCompleteTextBox1.DisplayMember = "idAndName";
-            this.customCompleteTextBox1.ValueMember = "id";
-            this.customCompleteTextBox1.Match += ( o, eve ) =>
-            {
-                TestObject obj = eve.Item as TestObject;
+            this.listBox1.DisplayMember = "ChineseName";
+            this.listBox1.ValueMember = "Code";
+            this.listBox1.Items.AddRange( stations.ToArray() );
 
-                if ( Convert.ToString( (char)(obj.id)) == eve.MatchText )
-                {
-                    eve.MatchResult = true;
-                }
-            };
+            this.comboBox1.DisplayMember = "ChineseName";
+            this.comboBox1.ValueMember = "Code";
+            this.comboBox1.Items.AddRange( stations.ToArray() );
+            this.comboBox1.DropDownHeight = 80;
+
+            this.customCompleteTextBox1.DisplayMember = "ChineseName";
+            this.customCompleteTextBox1.ValueMember = "Code";
+            this.customCompleteTextBox1.Items.AddRange( stations.ToArray() );
+            //this.customCompleteTextBox1.Match += ( o, eve ) =>
+            //{
+            //    Station obj = eve.Item as Station;
+
+            //    if ( obj.ThreedLetterCode == eve.MatchText || obj.FullPinYin == eve.MatchText 
+            //        || obj.ChineseName == eve.MatchText || obj.SimplePinYin == eve.MatchText )
+            //    {
+            //        eve.MatchResult = true;
+            //    }
+            //};
 		}
 
         private void button1_Click( object sender, EventArgs e )
@@ -48,28 +55,4 @@ namespace Test
 		
         
 	}
-
-
-    public class TestObject
-    {
-        public int id
-        {
-            get;
-            set;
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        public string idAndName
-        {
-            get
-            {
-                return this.id.ToString() + "-" + this.Name;
-            }
-        }
-    }
 }
