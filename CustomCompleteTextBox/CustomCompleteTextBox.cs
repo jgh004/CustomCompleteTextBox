@@ -12,7 +12,7 @@ namespace ExtLibrary
     /// 带下拉列表的自定义搜索文本框
     /// </summary>
 	[ToolboxItem( true )]
-	public partial class CustomCompleteTextBox : TextBox
+    public partial class CustomCompleteTextBox : TextBox
     {
         /// <summary>
         /// 监视鼠标滚轮事件
@@ -32,7 +32,7 @@ namespace ExtLibrary
         /// 显示候选列表
         /// </summary>
         private ListBox box;
-		private ToolStripControlHost host;
+        private ToolStripControlHost host;
 
         /// <summary>
         /// 下拉控件
@@ -41,16 +41,16 @@ namespace ExtLibrary
 
         //--------------------------------------------------------------------------------
 
-		/// <summary>
-		/// 获取或设置数据集合
-		/// </summary>
-		public ListBox.ObjectCollection Items
-		{
-			get
+        /// <summary>
+        /// 获取或设置数据集合
+        /// </summary>
+        public ListBox.ObjectCollection Items
+        {
+            get
             {
                 return this.innerListBox.Items;
             }
-		}
+        }
 
         /// <summary>
         /// 获取或设置选择的项目
@@ -64,7 +64,21 @@ namespace ExtLibrary
             set
             {
                 this.innerListBox.SelectedItem = value;
-                this.SetText();
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置选择的值
+        /// </summary>
+        public object SelectedValue
+        {
+            get
+            {
+                return this.innerListBox.SelectedValue;
+            }
+            set
+            {
+                this.innerListBox.SelectedValue = value;
             }
         }
 
@@ -99,24 +113,20 @@ namespace ExtLibrary
         }
 
         /// <summary>
-        /// 获取或设置是否自动显示下拉列表
+        /// 当项目进行搜索匹配时引发此事件, 可在此定义匹配规则.
         /// </summary>
-        public bool AutoDrop
-        {
-            get;
-            set;
-        }
+        public event EventHandler<MatchEventArgs> Match;
 
         //--------------------------------------------------------------------------------
 
-		/// <summary>
-		/// 构造函数
-		/// </summary>
-		public CustomCompleteTextBox()
-			: base()
-		{
-			this.InitControl();
-		}
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public CustomCompleteTextBox()
+            : base()
+        {
+            this.InitControl();
+        }
 
         //--------------------------------------------------------------------------------
 
@@ -124,58 +134,46 @@ namespace ExtLibrary
         /// 初始化布局
         /// </summary>
 		protected override void InitLayout()
-		{
-			base.InitLayout();
+        {
+            base.InitLayout();
 
-			this.box.Width = this.Width - 2;
-		}
+            this.box.Width = this.Width - 2;
+        }
 
-		protected override void OnClick( EventArgs e )
+        protected override void OnClick( EventArgs e )
         {
             base.OnClick( e );
             this.SelectAll();
             this.Focus();
-
-            if ( this.AutoDrop )
-            {
-                this.DropList();
-            }
+            this.MatchAndSetListItems();
+            this.DropList();
         }
 
-		protected override void OnEnter( EventArgs e )
-		{
-			base.OnEnter( e );
+        protected override void OnEnter( EventArgs e )
+        {
+            base.OnEnter( e );
             this.SelectAll();
             this.mouseWheel.Enable = true;
-
-            if ( this.AutoDrop )
-            {
-                this.DropList();
-            }
+            this.MatchAndSetListItems();
+            this.DropList();
         }
 
-		protected override void OnLeave( EventArgs e )
-		{
-			base.OnLeave( e );
+        protected override void OnLeave( EventArgs e )
+        {
+            base.OnLeave( e );
             this.mouseWheel.Enable = false;
-            this.innerListBox.SelectedItem = OnlyOneMatch( this.Text );
-
-            if ( this.AutoDrop )
-            {
-                this.CloseList();
-            }
-		}
+            this.CloseList();
+        }
 
         protected override void OnTextChanged( EventArgs e )
         {
             base.OnTextChanged( e );
-            
-            this.innerListBox.SelectedItem = OnlyOneMatch( this.Text );
 
-            if ( this.AutoDrop )
-            {
-                this.DropList();
-            }
+            List<object> objs = this.MatchAndSetListItems();
+            this.SelectedItem = objs.Count == 1 ? objs[0] : null;
+            this.box.SelectedItem = this.SelectedItem;
+
+            this.DropList();
         }
 
         protected override void OnKeyPress( KeyPressEventArgs e )
@@ -224,6 +222,18 @@ namespace ExtLibrary
             base.WndProc( ref m );
         }
 
+        /// <summary>
+        /// 项目匹配事件
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnMatch( MatchEventArgs e )
+        {
+            if ( this.Match != null )
+            {
+                this.Match( this, e );
+            }
+        }
+
         //--------------------------------------------------------------------------------
 
         /// <summary>
@@ -231,35 +241,6 @@ namespace ExtLibrary
         /// </summary>
         public void DropList()
         {
-            this.box.Items.Clear();
-            this.box.DisplayMember = this.DisplayMember;
-            this.box.ValueMember = this.ValueMember;
-
-            if ( this.Items != null )
-            {
-                if ( string.IsNullOrEmpty( this.Text ) )
-                {
-                    this.box.Items.AddRange( this.Items );
-                }
-                else
-                {
-                    for ( int i = 0; i < this.Items.Count; i++ )
-                    {
-                        object obj = this.Items[i];
-
-                        if ( obj != null )
-                        {
-                            if ( this.innerListBox.GetItemText( obj ).Contains( this.Text ) )
-                            {
-                                this.box.Items.Add( obj );
-                            }
-                        }
-                    }
-                }
-
-                this.box.SelectedItem = this.SelectedItem;
-            }
-
             if ( !this.drop.Visible )
             {
                 Screen screent = Screen.FromControl( this );
@@ -277,18 +258,72 @@ namespace ExtLibrary
         {
             this.drop.Close();
         }
-        
 
+        //--------------------------------------------------------------------------------
+
+        /// <summary>
+        /// 初始化各参数
+        /// </summary>
+        private void InitControl()
+        {
+            this.innerListBox = new ListBox();
+            this.innerListBox.SelectionMode = SelectionMode.One;
+
+            this.box = new ListBox();
+            this.box.Margin = Padding.Empty;
+            this.box.BorderStyle = BorderStyle.None;
+            this.box.TabStop = false;
+            this.box.SelectionMode = SelectionMode.One;
+            this.box.IntegralHeight = false;
+            this.box.MouseMove += Box_MouseMove;
+            this.box.Click += Box_Click;
+            this.box.KeyDown += Box_KeyDown;
+
+            this.host = new ToolStripControlHost( box );
+            this.host.Margin = Padding.Empty;
+            this.host.Padding = Padding.Empty;
+            this.host.AutoSize = false;
+            this.host.AutoToolTip = false;
+
+            this.drop = new ToolStripDropDownExt();
+            this.drop.AutoClose = false;
+            this.drop.Items.Add( host );
+            this.drop.Margin = Padding.Empty;
+            this.drop.Padding = new Padding( 1 );
+            this.drop.ShowItemToolTips = false;
+            this.drop.TabStop = false;
+            this.drop.Closed += Drop_Closed;
+            this.drop.ActiveChange += Drop_ActiveChange;
+
+            this.mouseWheel = new MouseWheelFilter( this.box );
+            this.mouseWheel.Enable = false;
+            this.appClick = new AppClickFilter( () =>
+            {
+                this.CloseList();
+            }, this, this.drop, this.box );
+            Application.AddMessageFilter( this.mouseWheel );
+            Application.AddMessageFilter( this.appClick );
+        }
+        
+        /// <summary>
+        /// 设置文本框文本
+        /// </summary>
         private void SetText()
         {
             this.Text = this.box.GetItemText( this.SelectedItem );
             this.SelectionStart = this.Text.Length;
         }
 
-        private object OnlyOneMatch( string text )
+        /// <summary>
+        /// 根据匹配规则,绑定下拉列表, 返回完全匹配项
+        /// </summary>
+        /// <returns>完全匹配项</returns>
+        private List<object> MatchAndSetListItems()
         {
-            object result = null;
-            int count = 0;
+            List<object> result = new List<object>();
+            this.box.Items.Clear();
+            this.box.DisplayMember = this.DisplayMember;
+            this.box.ValueMember = this.ValueMember;
 
             if ( this.Items != null )
             {
@@ -298,69 +333,63 @@ namespace ExtLibrary
 
                     if ( obj != null )
                     {
-                        if ( this.innerListBox.GetItemText( obj ) == this.Text )
+                        object valObj = FilterItemOnProperty( obj, this.ValueMember );
+                        string valueText = valObj == null ? "" : valObj.ToString();
+                        string displayText = this.innerListBox.GetItemText( obj );
+
+                        MatchEventArgs args = new MatchEventArgs();
+                        args.Item = obj;
+                        args.MatchText = this.Text;
+                        args.MatchResult = displayText.Contains( this.Text ) || valueText.Contains( this.Text );
+
+                        this.OnMatch( args );
+
+                        if ( args.MatchResult )
                         {
-                            result = obj;
-                            count++;
+                            this.box.Items.Add( obj );
+                        }
+
+                        if ( displayText == this.Text || valueText == this.Text )
+                        {
+                            result.Add( obj );
                         }
                     }
                 }
+
+                this.box.SelectedItem = this.SelectedItem;
             }
 
-            return count == 1 ? result : null;
+            return result;
         }
-
-        //--------------------------------------------------------------------------------
 
         /// <summary>
-        /// 初始化各参数
+        /// 返回指定绑定的属性的值
         /// </summary>
-        private void InitControl()
-		{
-            this.AutoDrop = true;
-            this.innerListBox = new ListBox();
-            this.innerListBox.SelectionMode = SelectionMode.One;
-
-            this.box = new ListBox();
-			this.box.Margin = Padding.Empty;
-			this.box.BorderStyle = BorderStyle.None;
-			this.box.TabStop = false;
-			this.box.SelectionMode = SelectionMode.One;
-			this.box.IntegralHeight = false;
-			this.box.MouseMove += Box_MouseMove;
-			this.box.Click += Box_Click;
-            this.box.KeyDown += Box_KeyDown;
-
-			this.host = new ToolStripControlHost( box );
-			this.host.Margin = Padding.Empty;
-			this.host.Padding = Padding.Empty;
-			this.host.AutoSize = false;
-            this.host.AutoToolTip = false;
-
-			this.drop = new ToolStripDropDownExt();
-			this.drop.AutoClose = false;
-			this.drop.Items.Add( host );
-			this.drop.Margin = Padding.Empty;
-			this.drop.Padding = new Padding( 1 );
-			this.drop.ShowItemToolTips = false;
-			this.drop.TabStop = false;
-			this.drop.Closed += Drop_Closed;
-			this.drop.ActiveChange += Drop_ActiveChange;
-
-            this.mouseWheel = new MouseWheelFilter( this.box );
-            this.mouseWheel.Enable = false;
-            this.appClick = new AppClickFilter( () =>
+        /// <param name="item">绑定项目</param>
+        /// <param name="field">指定属性</param>
+        /// <returns>属性的值</returns>
+        private object FilterItemOnProperty( object item, string field )
+        {
+            if ( (item != null) && (field.Length > 0) )
             {
-                if ( this.AutoDrop )
+                try
                 {
-                    this.CloseList();
+                    PropertyDescriptor descriptor = TypeDescriptor.GetProperties( item ).Find( field, true );
+
+                    if ( descriptor != null )
+                    {
+                        item = descriptor.GetValue( item );
+                    }
                 }
-            }, this, this.drop, this.box );
-            Application.AddMessageFilter( this.mouseWheel );
-            Application.AddMessageFilter( this.appClick );
+                catch
+                {
+                }
+            }
+
+            return item;
         }
-        
-        
+
+
         /// <summary>
         /// 关闭下拉列表时
         /// </summary>
@@ -368,6 +397,7 @@ namespace ExtLibrary
         /// <param name="e"></param>
         private void Drop_Closed( object sender, ToolStripDropDownClosedEventArgs e )
         {
+            this.SetText();
             this.box.SelectedIndex = -1;
         }
 
@@ -378,10 +408,7 @@ namespace ExtLibrary
         /// <param name="e"></param>
         private void Drop_ActiveChange( object sender, ActiveChangeEventArgs e )
         {
-            if ( this.AutoDrop && !e.Active )
-            {
-                this.CloseList();
-            }
+            this.CloseList();
         }
 
         /// <summary>
@@ -405,7 +432,7 @@ namespace ExtLibrary
         /// <param name="sender"></param>
         /// <param name="e"></param>
 		private void Box_Click( object sender, EventArgs e )
-		{
+        {
             if ( this.box.SelectedItem != null )
             {
                 this.SelectedItem = this.box.SelectedItem;
@@ -420,13 +447,46 @@ namespace ExtLibrary
         /// <param name="sender"></param>
         /// <param name="e"></param>
 		private void Box_MouseMove( object sender, MouseEventArgs e )
-		{
+        {
             int index = this.box.IndexFromPoint( e.Location );
 
             if ( index > -1 )
             {
                 this.box.SelectedIndex = index;
             }
-		}
-	}
+        }
+    }
+
+    /// <summary>
+    /// 匹配事件数据
+    /// </summary>
+    public class MatchEventArgs : EventArgs
+    {
+        /// <summary>
+        /// 获取当前需判断的数据项
+        /// </summary>
+        public object Item
+        {
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// 获取判断的文本
+        /// </summary>
+        public string MatchText
+        {
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// 获取或设置匹配结果,true,表示已匹配; false,表示未匹配.
+        /// </summary>
+        public bool MatchResult
+        {
+            get;
+            set;
+        }
+    }
 }

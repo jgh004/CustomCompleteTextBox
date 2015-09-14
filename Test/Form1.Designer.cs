@@ -54,7 +54,6 @@
             // 
             // customCompleteTextBox1
             // 
-            this.customCompleteTextBox1.AutoDrop = true;
             this.customCompleteTextBox1.DisplayMember = "";
             this.customCompleteTextBox1.Location = new System.Drawing.Point(195, 89);
             this.customCompleteTextBox1.Name = "customCompleteTextBox1";

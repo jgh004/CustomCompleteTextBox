@@ -16,7 +16,7 @@ namespace Test
             for ( int i = 'a'; i <= 'z'; i++ )
             {
                 TestObject obj = new TestObject();
-                obj.id = i;
+                obj.id = (char)i;
                 obj.Name = Convert.ToString( (char)i );
 
                 this.comboBox1.Items.Add( obj );
@@ -29,6 +29,15 @@ namespace Test
             this.comboBox1.DropDownHeight = 80;
             this.customCompleteTextBox1.DisplayMember = "idAndName";
             this.customCompleteTextBox1.ValueMember = "id";
+            this.customCompleteTextBox1.Match += ( o, eve ) =>
+            {
+                TestObject obj = eve.Item as TestObject;
+
+                if ( Convert.ToString( (char)(obj.id)) == eve.MatchText )
+                {
+                    eve.MatchResult = true;
+                }
+            };
 		}
 
         private void button1_Click( object sender, EventArgs e )
