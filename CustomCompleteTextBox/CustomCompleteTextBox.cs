@@ -25,11 +25,6 @@ namespace ExtLibrary
         private AppClickFilter appClick;
 
         /// <summary>
-        /// 是否手动设置 Text 文本
-        /// </summary>
-        private bool manualSetText;
-
-        /// <summary>
         /// 内部使用,用于存储listBox数据
         /// </summary>
         private ListBox innerListBox;
@@ -69,6 +64,7 @@ namespace ExtLibrary
             set
             {
                 this.innerListBox.SelectedItem = value;
+                this.SetText();
             }
         }
 
@@ -162,6 +158,7 @@ namespace ExtLibrary
 		{
 			base.OnLeave( e );
             this.mouseWheel.Enable = false;
+            this.innerListBox.SelectedItem = OnlyOneMatch( this.Text );
 
             if ( this.AutoDrop )
             {
@@ -172,24 +169,8 @@ namespace ExtLibrary
         protected override void OnTextChanged( EventArgs e )
         {
             base.OnTextChanged( e );
-            this.SelectionStart = this.Text.Length;
-
-            if ( this.Items != null )
-            {
-                for ( int i = 0; i < this.Items.Count; i++ )
-                {
-                    object obj = this.Items[i];
-
-                    if ( obj != null )
-                    {
-                        if ( this.innerListBox.GetItemText( obj ) == this.Text )
-                        {
-                            this.SelectedItem = obj;
-                            break;
-                        }
-                    }
-                }
-            }
+            
+            this.innerListBox.SelectedItem = OnlyOneMatch( this.Text );
 
             if ( this.AutoDrop )
             {
@@ -197,8 +178,20 @@ namespace ExtLibrary
             }
         }
 
+        protected override void OnKeyPress( KeyPressEventArgs e )
+        {
+            //去掉系统提示音
+            if ( e.KeyChar == 13 )
+            {
+                e.Handled = true;
+            }
+
+            base.OnKeyPress( e );
+        }
+
         protected override void OnKeyDown( KeyEventArgs e )
         {
+            //按上下键时不改变文本框内的光标位置
             switch ( e.KeyCode )
             {
                 case Keys.Up:
@@ -212,6 +205,7 @@ namespace ExtLibrary
 
         protected override void WndProc( ref Message m )
         {
+            //上下键,回车键,将消息转发到下拉框
             if ( m.Msg == 0x100 )
             {
                 switch ( m.WParam.ToInt32() )
@@ -283,6 +277,38 @@ namespace ExtLibrary
         {
             this.drop.Close();
         }
+        
+
+        private void SetText()
+        {
+            this.Text = this.box.GetItemText( this.SelectedItem );
+            this.SelectionStart = this.Text.Length;
+        }
+
+        private object OnlyOneMatch( string text )
+        {
+            object result = null;
+            int count = 0;
+
+            if ( this.Items != null )
+            {
+                for ( int i = 0; i < this.Items.Count; i++ )
+                {
+                    object obj = this.Items[i];
+
+                    if ( obj != null )
+                    {
+                        if ( this.innerListBox.GetItemText( obj ) == this.Text )
+                        {
+                            result = obj;
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            return count == 1 ? result : null;
+        }
 
         //--------------------------------------------------------------------------------
 
@@ -292,10 +318,8 @@ namespace ExtLibrary
         private void InitControl()
 		{
             this.AutoDrop = true;
-            this.manualSetText = false;
             this.innerListBox = new ListBox();
             this.innerListBox.SelectionMode = SelectionMode.One;
-            this.innerListBox.SelectedValueChanged += InnerListBox_SelectedValueChanged;
 
             this.box = new ListBox();
 			this.box.Margin = Padding.Empty;
@@ -335,13 +359,8 @@ namespace ExtLibrary
             Application.AddMessageFilter( this.mouseWheel );
             Application.AddMessageFilter( this.appClick );
         }
-
-        private void InnerListBox_SelectedValueChanged( object sender, EventArgs e )
-        {
-            this.Text = this.box.GetItemText( this.SelectedItem );
-        }
-
-
+        
+        
         /// <summary>
         /// 关闭下拉列表时
         /// </summary>
@@ -389,7 +408,6 @@ namespace ExtLibrary
 		{
             if ( this.box.SelectedItem != null )
             {
-                this.manualSetText = true;
                 this.SelectedItem = this.box.SelectedItem;
             }
 
@@ -403,7 +421,12 @@ namespace ExtLibrary
         /// <param name="e"></param>
 		private void Box_MouseMove( object sender, MouseEventArgs e )
 		{
-			this.box.SelectedIndex = this.box.IndexFromPoint( e.Location );
+            int index = this.box.IndexFromPoint( e.Location );
+
+            if ( index > -1 )
+            {
+                this.box.SelectedIndex = index;
+            }
 		}
 	}
 }
