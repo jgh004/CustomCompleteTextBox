@@ -47,6 +47,15 @@ namespace ExtLibrary
         //--------------------------------------------------------------------------------
 
         /// <summary>
+        /// 获取或设置是否自适应下拉列表的宽度, 默认为 true.
+        /// </summary>
+        public bool AutoDropWidth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// 获取或设置下拉列表高度, 默认100.
         /// </summary>
         public int DropHeight
@@ -343,6 +352,7 @@ namespace ExtLibrary
         /// </summary>
         private void InitControl()
         {
+            this.AutoDropWidth = true;
             this.DropHeight = 100;
             this.innerListBox = new ListBox();
             this.innerListBox.SelectionMode = SelectionMode.One;
@@ -407,7 +417,7 @@ namespace ExtLibrary
             this.box.BeginUpdate();
             this.box.Items.Clear();
             Graphics gh = this.box.CreateGraphics();
-            SizeF newSize = new SizeF( this.Width - 2, this.box.Height );
+            SizeF newSize = new SizeF();
 
             if ( this.Items != null )
             {
@@ -434,10 +444,12 @@ namespace ExtLibrary
                         {
                             this.box.Items.Add( obj );
 
-                            //测量当前项目的宽度
-                            SizeF currentSize = gh.MeasureString( displayText, this.box.Font );
-                            currentSize.Width += (this.box.Items.Count * this.box.ItemHeight > this.box.Height ? 18 : 0);
-                            newSize = newSize.Width > currentSize.Width ? newSize : currentSize;
+                            if ( this.AutoDropWidth )
+                            {
+                                //测量当前项目的宽度
+                                SizeF currentSize = gh.MeasureString( displayText, this.box.Font );
+                                newSize = newSize.Width > currentSize.Width ? newSize : currentSize;
+                            }
                         }
 
                         //完全相等
@@ -453,7 +465,9 @@ namespace ExtLibrary
 
             this.box.EndUpdate();
 
-            this.box.Width = Convert.ToInt32( newSize.Width );
+            //计算宽度
+            newSize.Width += (this.box.Items.Count * this.box.ItemHeight > this.box.Height ? 18 : 0);
+            this.box.Width = Convert.ToInt32( newSize.Width > this.Width - 2 ? newSize.Width : this.Width -2 );
             //设置列表高度, 小于 DropHeight, 收缩高度到刚好容下所有项目, 大于 DropHeight 或列表为空, 则高度为 DropHeight.
             int sumHight = this.box.Items.Count == 0 ? this.DropHeight : this.box.Items.Count * this.box.ItemHeight;
             this.box.Height = sumHight < this.DropHeight ? sumHight : this.DropHeight;
