@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Collections;
 
 namespace ExtLibrary
 {
@@ -12,6 +10,9 @@ namespace ExtLibrary
     /// 带下拉列表的自定义搜索文本框
     /// </summary>
 	[ToolboxItem( true )]
+    //[Designer( typeof( Designer ) )]
+    [DefaultProperty( "Text" ), DefaultEvent( "Match" )]
+    [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.CustomCompleteTextBox.bmp" )]
     public partial class CustomCompleteTextBox : TextBox
     {
         /// <summary>

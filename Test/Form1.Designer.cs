@@ -30,8 +30,8 @@
 		{
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.customCompleteTextBox1 = new ExtLibrary.CustomCompleteTextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.customCompleteTextBox1 = new ExtLibrary.CustomCompleteTextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -52,16 +52,6 @@
             this.comboBox1.Size = new System.Drawing.Size(98, 20);
             this.comboBox1.TabIndex = 1;
             // 
-            // customCompleteTextBox1
-            // 
-            this.customCompleteTextBox1.DisplayMember = "";
-            this.customCompleteTextBox1.Location = new System.Drawing.Point(195, 89);
-            this.customCompleteTextBox1.Name = "customCompleteTextBox1";
-            this.customCompleteTextBox1.SelectedItem = null;
-            this.customCompleteTextBox1.Size = new System.Drawing.Size(100, 21);
-            this.customCompleteTextBox1.TabIndex = 7;
-            this.customCompleteTextBox1.ValueMember = "";
-            // 
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
@@ -70,6 +60,21 @@
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(120, 64);
             this.listBox1.TabIndex = 8;
+            // 
+            // customCompleteTextBox1
+            // 
+            this.customCompleteTextBox1.AutoDropWidth = true;
+            this.customCompleteTextBox1.DisplayMember = "";
+            this.customCompleteTextBox1.DropHeight = 100;
+            this.customCompleteTextBox1.ItemFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.customCompleteTextBox1.ItemForeColor = System.Drawing.SystemColors.WindowText;
+            this.customCompleteTextBox1.Location = new System.Drawing.Point(195, 89);
+            this.customCompleteTextBox1.Name = "customCompleteTextBox1";
+            this.customCompleteTextBox1.SelectedItem = null;
+            this.customCompleteTextBox1.SelectedValue = null;
+            this.customCompleteTextBox1.Size = new System.Drawing.Size(100, 21);
+            this.customCompleteTextBox1.TabIndex = 7;
+            this.customCompleteTextBox1.ValueMember = "";
             // 
             // Form1
             // 
