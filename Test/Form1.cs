@@ -40,6 +40,7 @@ namespace Test
             this.customCompleteTextBox1.DisplayMember = "ChineseName";
             this.customCompleteTextBox1.ValueMember = "Code";
             this.customCompleteTextBox1.DropHeight = 120;
+            //this.customCompleteTextBox1.ItemForeColor = System.Drawing.Color.Red;
             this.customCompleteTextBox1.ItemFont = new System.Drawing.Font( "微软雅黑", 10 );
             this.customCompleteTextBox1.Items.AddRange( stations.ToArray() );
             this.customCompleteTextBox1.Match += ( o, eve ) =>
