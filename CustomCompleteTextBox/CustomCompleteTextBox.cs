@@ -47,6 +47,45 @@ namespace ExtLibrary
         //--------------------------------------------------------------------------------
 
         /// <summary>
+        /// 获取或设置下拉列表高度, 默认100.
+        /// </summary>
+        public int DropHeight
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 获取或设置下拉项目的字体
+        /// </summary>
+        public Font ItemFont
+        {
+            get
+            {
+                return this.box.Font;
+            }
+            set
+            {
+                this.box.Font = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置下拉项目的前景颜色
+        /// </summary>
+        public Color ItemForeColor
+        {
+            get
+            {
+                return this.box.ForeColor;
+            }
+            set
+            {
+                this.box.ForeColor = value;
+            }
+        }
+
+        /// <summary>
         /// 获取或设置数据集合
         /// </summary>
         public ListBox.ObjectCollection Items
@@ -141,8 +180,6 @@ namespace ExtLibrary
 		protected override void InitLayout()
         {
             base.InitLayout();
-
-            this.box.Width = this.Width - 2;
         }
 
         /// <summary>
@@ -154,7 +191,6 @@ namespace ExtLibrary
             base.OnClick( e );
             this.SelectAll();
             this.Focus();
-            this.MatchAndSetListItems();
             this.DropList();
         }
 
@@ -167,7 +203,6 @@ namespace ExtLibrary
             base.OnEnter( e );
             this.SelectAll();
             this.mouseWheel.Enable = true;
-            this.MatchAndSetListItems();
             this.DropList();
         }
 
@@ -189,10 +224,6 @@ namespace ExtLibrary
         protected override void OnTextChanged( EventArgs e )
         {
             base.OnTextChanged( e );
-
-            List<object> objs = this.MatchAndSetListItems();
-            this.SelectedItem = objs.Count == 1 ? objs[0] : null;
-            this.box.SelectedItem = this.SelectedItem;
 
             this.DropList();
         }
@@ -274,6 +305,19 @@ namespace ExtLibrary
         /// </summary>
         public void DropList()
         {
+            List<object> objs = this.MatchAndSetListItems();
+            this.SelectedItem = objs.Count > 0 ? objs[0] : null;
+            this.box.SelectedItem = this.SelectedItem;
+
+            //如无选中, 将滚动条回到最上方
+            if ( this.SelectedItem == null && this.box.Items.Count > 0 )
+            {
+                this.box.BeginUpdate();
+                this.box.SelectedIndex = 0;
+                this.box.ClearSelected();
+                this.box.EndUpdate();
+            }
+
             if ( !this.drop.Visible )
             {
                 Screen screent = Screen.FromControl( this );
@@ -299,15 +343,18 @@ namespace ExtLibrary
         /// </summary>
         private void InitControl()
         {
+            this.DropHeight = 100;
             this.innerListBox = new ListBox();
             this.innerListBox.SelectionMode = SelectionMode.One;
 
             this.box = new ListBox();
+            this.box.Font = this.Font;
+            this.box.ForeColor = this.ForeColor;
+            this.box.Height = this.DropHeight;
             this.box.Margin = Padding.Empty;
             this.box.BorderStyle = BorderStyle.None;
-            this.box.TabStop = false;
             this.box.SelectionMode = SelectionMode.One;
-            this.box.IntegralHeight = false;
+            this.box.TabStop = false;
             this.box.MouseMove += Box_MouseMove;
             this.box.Click += Box_Click;
             this.box.KeyDown += Box_KeyDown;
@@ -337,7 +384,7 @@ namespace ExtLibrary
             Application.AddMessageFilter( this.mouseWheel );
             Application.AddMessageFilter( this.appClick );
         }
-        
+
         /// <summary>
         /// 设置文本框文本
         /// </summary>
@@ -354,9 +401,13 @@ namespace ExtLibrary
         private List<object> MatchAndSetListItems()
         {
             List<object> result = new List<object>();
-            this.box.Items.Clear();
             this.box.DisplayMember = this.DisplayMember;
             this.box.ValueMember = this.ValueMember;
+
+            this.box.BeginUpdate();
+            this.box.Items.Clear();
+            Graphics gh = this.box.CreateGraphics();
+            SizeF newSize = new SizeF( this.Width - 2, this.box.Height );
 
             if ( this.Items != null )
             {
@@ -373,24 +424,39 @@ namespace ExtLibrary
                         MatchEventArgs args = new MatchEventArgs();
                         args.Item = obj;
                         args.MatchText = this.Text;
-                        args.MatchResult = displayText.Contains( this.Text ) || valueText.Contains( this.Text );
+                        args.MatchResult = displayText.StartsWith( this.Text ) || valueText.StartsWith( this.Text );
+                        args.EqualResult = displayText == this.Text || valueText == this.Text;
 
                         this.OnMatch( args );
 
+                        //部分匹配
                         if ( args.MatchResult )
                         {
                             this.box.Items.Add( obj );
+
+                            //测量当前项目的宽度
+                            SizeF currentSize = gh.MeasureString( displayText, this.box.Font );
+                            currentSize.Width += (this.box.Items.Count * this.box.ItemHeight > this.box.Height ? 18 : 0);
+                            newSize = newSize.Width > currentSize.Width ? newSize : currentSize;
                         }
 
-                        if ( displayText == this.Text || valueText == this.Text )
+                        //完全相等
+                        if ( args.EqualResult )
                         {
                             result.Add( obj );
                         }
                     }
                 }
-
+                
                 this.box.SelectedItem = this.SelectedItem;
             }
+
+            this.box.EndUpdate();
+
+            this.box.Width = Convert.ToInt32( newSize.Width );
+            //设置列表高度, 小于 DropHeight, 收缩高度到刚好容下所有项目, 大于 DropHeight 或列表为空, 则高度为 DropHeight.
+            int sumHight = this.box.Items.Count == 0 ? this.DropHeight : this.box.Items.Count * this.box.ItemHeight;
+            this.box.Height = sumHight < this.DropHeight ? sumHight : this.DropHeight;
 
             return result;
         }
@@ -517,12 +583,30 @@ namespace ExtLibrary
         }
 
         /// <summary>
-        /// 获取或设置匹配结果,true,表示已匹配; false,表示未匹配.
+        /// 获取或设置 MatchText 与 Item 中的属性是否部分匹配
         /// </summary>
         public bool MatchResult
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// 获取或设置 MatchText 与 Item 中的属性是否完全相等 
+        /// </summary>
+        public bool EqualResult
+        {
+            get;
+            set;
+        }
+
+
+        public MatchEventArgs()
+        {
+            this.Item = null;
+            this.MatchText = string.Empty;
+            this.MatchResult = false;
+            this.EqualResult = false;
         }
     }
 }
