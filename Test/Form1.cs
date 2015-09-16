@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
@@ -15,6 +16,19 @@ namespace Test
 
         private void Form1_Load( object sender, EventArgs e )
         {
+            this.InitData();
+        }
+
+        private void button1_Click( object sender, EventArgs e )
+        {
+            this.InitData();
+            this.comboBox1.DroppedDown = true;
+            this.customCompleteTextBox1.DropList();
+        }
+
+
+        private void InitData()
+        {
             List<Station> stations = new List<Station>();
             JavaScriptSerializer json = new JavaScriptSerializer();
 
@@ -22,21 +36,22 @@ namespace Test
             {
                 stations = json.Deserialize<List<Station>>( sr.ReadToEnd() );
             }
-
-            this.listBox1.BeginUpdate();
+            
             this.listBox1.Items.Clear();
+            this.comboBox1.Items.Clear();
+            this.customCompleteTextBox1.Items.Clear();
+
+            Thread.Sleep( 200 );
+
             this.listBox1.DisplayMember = "ChineseName";
             this.listBox1.ValueMember = "Code";
             this.listBox1.Items.AddRange( stations.ToArray() );
-            this.listBox1.EndUpdate();
 
-            this.comboBox1.Items.Clear();
             this.comboBox1.DisplayMember = "ChineseName";
             this.comboBox1.ValueMember = "Code";
             this.comboBox1.Items.AddRange( stations.ToArray() );
             this.comboBox1.DropDownHeight = 80;
 
-            this.customCompleteTextBox1.Items.Clear();
             this.customCompleteTextBox1.DisplayMember = "ChineseName";
             this.customCompleteTextBox1.ValueMember = "Code";
             this.customCompleteTextBox1.DropHeight = 120;
@@ -59,12 +74,6 @@ namespace Test
                     eve.EqualResult = true;
                 }
             };
-        }
-
-        private void button1_Click( object sender, EventArgs e )
-        {
-            this.comboBox1.DroppedDown = true;
-            this.customCompleteTextBox1.DropList();
         }
     }
 }
