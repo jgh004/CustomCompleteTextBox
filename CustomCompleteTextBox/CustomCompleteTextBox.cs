@@ -13,7 +13,7 @@ namespace CustomCompleteTextBox
 	[ToolboxItem( true )]
     //[Designer( typeof( Designer ) )]
     [DefaultProperty( "Text" ), DefaultEvent( "Match" )]
-    [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.CustomCompleteTextBox.bmp" )]
+    [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.ToolBox.bmp" )]
     public partial class CustomCompleteTextBox : TextBox
     {
         /// <summary>
