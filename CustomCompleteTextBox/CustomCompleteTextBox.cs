@@ -11,7 +11,7 @@ namespace CustomCompleteTextBox
     /// 带下拉列表的自定义搜索文本框
     /// </summary>
 	[ToolboxItem( true )]
-    //[Designer( typeof( Designer ) )]
+    [Designer( typeof( CustomCompleteTextBoxDesigner ) )]
     [DefaultProperty( "Text" ), DefaultEvent( "Match" )]
     [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.ToolBox.bmp" )]
     public partial class CustomCompleteTextBox : TextBox
@@ -341,27 +341,30 @@ namespace CustomCompleteTextBox
         /// </summary>
         public void DropList()
         {
-            List<object> objs = this.MatchAndSetListItems();
-            this.SelectedItem = objs.Count > 0 ? objs[0] : null;
-            this.box.SelectedItem = this.SelectedItem;
+            //if ( !this.DesignMode )
+            //{
+                List<object> objs = this.MatchAndSetListItems();
+                this.SelectedItem = objs.Count > 0 ? objs[0] : null;
+                this.box.SelectedItem = this.SelectedItem;
 
-            //如无选中, 将滚动条回到最上方
-            if ( this.SelectedItem == null && this.box.Items.Count > 0 )
-            {
-                this.box.BeginUpdate();
-                this.box.SelectedIndex = 0;
-                this.box.ClearSelected();
-                this.box.EndUpdate();
-            }
+                //如无选中, 将滚动条回到最上方
+                if ( this.SelectedItem == null && this.box.Items.Count > 0 )
+                {
+                    this.box.BeginUpdate();
+                    this.box.SelectedIndex = 0;
+                    this.box.ClearSelected();
+                    this.box.EndUpdate();
+                }
 
-            if ( !this.drop.Visible )
-            {
-                Screen screent = Screen.FromControl( this );
-                Point showPoint = new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, this.Height - (this.Size.Height - this.ClientSize.Height) / 2 );
-                ToolStripDropDownDirection direction = this.drop.Height > screent.WorkingArea.Height - this.PointToScreen( showPoint ).Y ? ToolStripDropDownDirection.AboveRight : ToolStripDropDownDirection.BelowRight;
-                showPoint = direction == ToolStripDropDownDirection.BelowRight ? showPoint : new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, 0 - (this.Size.Height - this.ClientSize.Height) / 2 );
-                this.drop.Show( this, showPoint, direction );
-            }
+                if ( !this.drop.Visible )
+                {
+                    Screen screent = Screen.FromControl( this );
+                    Point showPoint = new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, this.Height - (this.Size.Height - this.ClientSize.Height) / 2 );
+                    ToolStripDropDownDirection direction = this.drop.Height > screent.WorkingArea.Height - this.PointToScreen( showPoint ).Y ? ToolStripDropDownDirection.AboveRight : ToolStripDropDownDirection.BelowRight;
+                    showPoint = direction == ToolStripDropDownDirection.BelowRight ? showPoint : new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, 0 - (this.Size.Height - this.ClientSize.Height) / 2 );
+                    this.drop.Show( this, showPoint, direction );
+                }
+            //}
         }
 
         /// <summary>
