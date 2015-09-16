@@ -51,6 +51,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置是否自适应下拉列表的宽度, 默认为 true.
         /// </summary>
+        [Browsable( true )]
+        [Category( "Behavior" )]
+        [Description( "是否自适应下拉列表的宽度" )]
         public bool AutoDropWidth
         {
             get;
@@ -60,6 +63,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置下拉列表高度, 默认100.
         /// </summary>
+        [Browsable( true )]
+        [Category( "Layout" )]
+        [Description( "下拉列表高度" )]
         public int DropHeight
         {
             get;
@@ -69,6 +75,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置下拉项目的字体
         /// </summary>
+        [Browsable( true )]
+        [Category( "Appearance" )]
+        [Description( "下拉项目的字体" )]
         public Font ItemFont
         {
             get
@@ -84,6 +93,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置下拉项目的前景颜色
         /// </summary>
+        [Browsable( true )]
+        [Category( "Appearance" )]
+        [Description( "下拉项目的前景颜色" )]
         public Color ItemForeColor
         {
             get
@@ -97,8 +109,11 @@ namespace CustomCompleteTextBox
         }
 
         /// <summary>
-        /// 获取或设置数据集合
+        /// 获取或设置下拉列表的数据集合
         /// </summary>
+        [Browsable( true )]
+        [Category( "Data" )]
+        [Description( "下拉列表的数据集合" )]
         public ListBox.ObjectCollection Items
         {
             get
@@ -110,6 +125,7 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置选择的项目
         /// </summary>
+        [Browsable( false )]
         public object SelectedItem
         {
             get
@@ -125,6 +141,7 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置选择的值
         /// </summary>
+        [Browsable( false )]
         public object SelectedValue
         {
             get
@@ -140,6 +157,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置显示的属性
         /// </summary>
+        [Browsable( true )]
+        [Category( "Data" )]
+        [Description( "显示的绑定属性" )]
         public string DisplayMember
         {
             get
@@ -155,6 +175,9 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 获取或设置值的属性
         /// </summary>
+        [Browsable( true )]
+        [Category( "Data" )]
+        [Description( "实际值的绑定属性" )]
         public string ValueMember
         {
             get
@@ -170,6 +193,8 @@ namespace CustomCompleteTextBox
         /// <summary>
         /// 当项目进行搜索匹配时引发此事件, 可在此定义匹配规则.
         /// </summary>
+        [Category( "Behavior" )]
+        [Description( "当项目进行搜索匹配时引发此事件, 可在此定义匹配规则." )]
         public event EventHandler<MatchEventArgs> Match;
 
         //--------------------------------------------------------------------------------
@@ -617,6 +642,9 @@ namespace CustomCompleteTextBox
         }
 
 
+        /// <summary>
+        /// 默认构造函数
+        /// </summary>
         public MatchEventArgs()
         {
             this.Item = null;
