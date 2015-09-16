@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace ExtLibrary
+namespace CustomCompleteTextBox
 {
-	/// <summary>
-	/// 继承自 ToolStripDropDown 的类
-	/// </summary>
-	public class ToolStripDropDownExt : ToolStripDropDown
+    /// <summary>
+    /// 继承自 ToolStripDropDown 的类
+    /// </summary>
+    [ToolboxItem( false )]
+    public class ToolStripDropDownExt : ToolStripDropDown
 	{
 		/// <summary>
 		/// 当控件激活或失去激活状态时发生, 发生于所有事件之前.

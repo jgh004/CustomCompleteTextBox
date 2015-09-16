@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using ExtLibrary;
 
-namespace ExtLibrary
+namespace CustomCompleteTextBox
 {
     /// <summary>
     /// 带下拉列表的自定义搜索文本框

@@ -31,7 +31,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.customCompleteTextBox1 = new ExtLibrary.CustomCompleteTextBox();
+            this.customCompleteTextBox1 = new CustomCompleteTextBox.CustomCompleteTextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -97,7 +97,7 @@
 		#endregion
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.ComboBox comboBox1;
-        private ExtLibrary.CustomCompleteTextBox customCompleteTextBox1;
+        private CustomCompleteTextBox.CustomCompleteTextBox customCompleteTextBox1;
         private System.Windows.Forms.ListBox listBox1;
     }
 }
