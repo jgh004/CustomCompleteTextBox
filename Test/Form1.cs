@@ -41,7 +41,7 @@ namespace Test
             this.comboBox1.Items.Clear();
             this.customCompleteTextBox1.Items.Clear();
 
-            Thread.Sleep( 200 );
+            //Thread.Sleep( 200 );
 
             this.listBox1.DisplayMember = "ChineseName";
             this.listBox1.ValueMember = "Code";
