@@ -11,7 +11,6 @@ namespace CustomCompleteTextBox
     /// 带下拉列表的自定义搜索文本框
     /// </summary>
 	[ToolboxItem( true )]
-    [Designer( typeof( CustomCompleteTextBoxDesigner ) )]
     [DefaultProperty( "Text" ), DefaultEvent( "Match" )]
     [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.ToolBox.bmp" )]
     public partial class CustomCompleteTextBox : TextBox
@@ -341,9 +340,9 @@ namespace CustomCompleteTextBox
         /// </summary>
         public void DropList()
         {
-            //if ( !this.DesignMode )
-            //{
-                List<object> objs = this.MatchAndSetListItems();
+			if ( !this.DesignMode )
+			{
+				List<object> objs = this.MatchAndSetListItems();
                 this.SelectedItem = objs.Count > 0 ? objs[0] : null;
                 this.box.SelectedItem = this.SelectedItem;
 
@@ -364,8 +363,8 @@ namespace CustomCompleteTextBox
                     showPoint = direction == ToolStripDropDownDirection.BelowRight ? showPoint : new Point( 0 - (this.Size.Width - this.ClientSize.Width) / 2, 0 - (this.Size.Height - this.ClientSize.Height) / 2 );
                     this.drop.Show( this, showPoint, direction );
                 }
-            //}
-        }
+			}
+		}
 
         /// <summary>
         /// 关闭下拉列表

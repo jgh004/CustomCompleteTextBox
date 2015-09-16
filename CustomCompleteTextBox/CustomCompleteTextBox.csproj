@@ -38,7 +38,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomCompleteTextBoxDesigner.cs" />
     <Compile Include="WindowsMessage\AppClickFilterHelper.cs" />
     <Compile Include="CustomCompleteTextBox.cs">
       <SubType>Component</SubType>
