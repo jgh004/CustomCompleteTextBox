@@ -21,14 +21,14 @@ namespace ExtLibrary
 		/// </summary>
 		/// <param name="windown">父窗口句柄</param>
 		/// <returns>所有子窗口</returns>
-		public static List<IntPtr> GetChildWindowns( IntPtr windown )
+		public static List<IntPtr> GetChildrenWindowns( IntPtr windown )
         {
             List<IntPtr> result = new List<IntPtr>();
 
             WindowsAPI.EnumChildWindows( windown, ( hwnd, lParam ) =>
             {
                 result.Add( hwnd );
-                result.AddRange( GetChildWindowns( hwnd ) );
+                result.AddRange( GetChildrenWindowns( hwnd ) );
                 return true;
             }, IntPtr.Zero );
 
@@ -49,7 +49,7 @@ namespace ExtLibrary
                 foreach ( Control c in control )
                 {
                     result.Add( c.Handle );
-                    result.AddRange( GetChildWindowns( c.Handle ) );
+                    result.AddRange( GetChildrenWindowns( c.Handle ) );
                 }
             }
 
