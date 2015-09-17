@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("CustomCompleteTextBox")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle( "https://github.com/jgh004/CustomCompleteTextBox" )]
+[assembly: AssemblyDescription( "适用于 WinForm 的带下拉列表的自定义搜索文本框" )]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany( "blog.itnmg.net" )]
 [assembly: AssemblyProduct("CustomCompleteTextBox")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright( "Copyright ©  2015 blog.itnmg.net" )]
+[assembly: AssemblyTrademark("Extlibrary")]
 [assembly: AssemblyCulture("")]
 
 //将 ComVisible 设置为 false 将使此程序集中的类型
