@@ -343,6 +343,7 @@ namespace CustomCompleteTextBox
 
 			if ( this.Text.Length == 0 )
 			{
+				this.SelectedItem = null;
 				this.CloseList();
 			}
 
