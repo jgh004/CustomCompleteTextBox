@@ -11,7 +11,7 @@ namespace CustomCompleteTextBox
     /// 带下拉列表的自定义搜索文本框
     /// </summary>
 	[ToolboxItem( true )]
-    [DefaultProperty( "Text" ), DefaultEvent( "Match" )]
+    [DefaultProperty( "DropDownMinCharLength" ), DefaultEvent( "Match" )]
     [ToolboxBitmap( typeof( CustomCompleteTextBox ), "Resources.ToolBox.bmp" )]
     public partial class CustomCompleteTextBox : TextBox
     {
@@ -45,12 +45,50 @@ namespace CustomCompleteTextBox
         /// </summary>
 		private ToolStripDropDownExt drop;
 
-        //--------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------
 
-        /// <summary>
-        /// 获取或设置是否自适应下拉列表的宽度, 默认为 true.
-        /// </summary>
-        [Browsable( true )]
+
+		/// <summary>
+		/// 禁止多行模式
+		/// </summary>
+		[Browsable( false )]
+		[EditorBrowsable( EditorBrowsableState.Never )]
+		public new bool Multiline
+		{
+			get
+			{
+				return base.Multiline;
+			}
+		}
+		
+		/// <summary>
+		/// 获取或设置当文本框获得焦点时是否显示下拉列表
+		/// </summary>
+		[Browsable( true )]
+		[Category( "Behavior" )]
+		[Description( "当获得焦点时是否显示下拉列表" )]
+		public bool DropDownOnEnter
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 获取或设置显示下拉列表所需最短字符数, 默认为 1.
+		/// </summary>
+		[Browsable( true )]
+		[Category( "Behavior" )]
+		[Description( "当输入字符数大于等于此值时才显示下拉列表" )]
+		public int DropDownMinCharLength
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 获取或设置是否自适应下拉列表的宽度, 默认为 true.
+		/// </summary>
+		[Browsable( true )]
         [Category( "Behavior" )]
         [Description( "是否自适应下拉列表的宽度" )]
         public bool AutoDropWidth
@@ -210,132 +248,6 @@ namespace CustomCompleteTextBox
         //--------------------------------------------------------------------------------
 
         /// <summary>
-        /// 初始化布局
-        /// </summary>
-		protected override void InitLayout()
-        {
-            base.InitLayout();
-        }
-
-        /// <summary>
-        /// 单击文本框时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnClick( EventArgs e )
-        {
-            base.OnClick( e );
-            this.SelectAll();
-            this.Focus();
-            this.DropList();
-        }
-
-        /// <summary>
-        /// 文本框获得焦点时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnEnter( EventArgs e )
-        {
-            base.OnEnter( e );
-            this.SelectAll();
-            this.mouseWheel.Enable = true;
-            this.DropList();
-        }
-
-        /// <summary>
-        /// 文本框失去焦点时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnLeave( EventArgs e )
-        {
-            base.OnLeave( e );
-            this.mouseWheel.Enable = false;
-            this.CloseList();
-        }
-
-        /// <summary>
-        /// 文本框内容改变时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnTextChanged( EventArgs e )
-        {
-            base.OnTextChanged( e );
-
-            this.DropList();
-        }
-
-        /// <summary>
-        /// 在文本框按下并释放按键时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnKeyPress( KeyPressEventArgs e )
-        {
-            //去掉系统提示音
-            if ( e.KeyChar == 13 )
-            {
-                e.Handled = true;
-            }
-
-            base.OnKeyPress( e );
-        }
-
-        /// <summary>
-        /// 在文本框按下按键时
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnKeyDown( KeyEventArgs e )
-        {
-            //按上下键时不改变文本框内的光标位置
-            switch ( e.KeyCode )
-            {
-                case Keys.Up:
-                case Keys.Down:
-                    e.Handled = true;
-                    break;
-            }
-
-            base.OnKeyDown( e );
-        }
-
-        /// <summary>
-        /// 处理针对文本框的系统消息
-        /// </summary>
-        /// <param name="m"></param>
-        protected override void WndProc( ref Message m )
-        {
-            //上下键,回车键,将消息转发到下拉框
-            if ( m.Msg == 0x100 )
-            {
-                switch ( m.WParam.ToInt32() )
-                {
-                    case 13:
-                    case 38:
-                    case 40:
-                        if ( this.box.Visible )
-                        {
-                            WindowsAPI.SendMessage( this.box.Handle, m.Msg, m.WParam, m.LParam );
-                        }
-                        break;
-                }
-            }
-
-            base.WndProc( ref m );
-        }
-
-        /// <summary>
-        /// 项目匹配事件
-        /// </summary>
-        /// <param name="e"></param>
-        protected virtual void OnMatch( MatchEventArgs e )
-        {
-            if ( this.Match != null )
-            {
-                this.Match( this, e );
-            }
-        }
-
-        //--------------------------------------------------------------------------------
-
-        /// <summary>
         /// 显示下拉列表
         /// </summary>
         public void DropList()
@@ -372,15 +284,153 @@ namespace CustomCompleteTextBox
         public void CloseList()
         {
             this.drop.Close();
-        }
+		}
 
-        //--------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------
 
-        /// <summary>
-        /// 初始化各参数
-        /// </summary>
-        private void InitControl()
+		/// <summary>
+		/// 初始化布局
+		/// </summary>
+		protected override void InitLayout()
+		{
+			base.InitLayout();
+		}
+
+		/// <summary>
+		/// 单击文本框时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnClick( EventArgs e )
+		{
+			base.OnClick( e );
+			this.SelectAll();
+		}
+
+		/// <summary>
+		/// 文本框获得焦点时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnEnter( EventArgs e )
+		{
+			base.OnEnter( e );
+			this.SelectAll();
+			this.mouseWheel.Enable = true;
+
+			if ( this.DropDownOnEnter )
+			{
+				this.DropList();
+			}
+		}
+
+		/// <summary>
+		/// 文本框失去焦点时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnLeave( EventArgs e )
+		{
+			base.OnLeave( e );
+			this.mouseWheel.Enable = false;
+			this.CloseList();
+		}
+
+		/// <summary>
+		/// 文本框内容改变时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnTextChanged( EventArgs e )
+		{
+			base.OnTextChanged( e );
+
+			if ( this.Text.Length == 0 )
+			{
+				this.CloseList();
+			}
+
+			if ( this.Text.Length >= Math.Max( 0, this.DropDownMinCharLength ) )
+			{
+				this.DropList();
+			}
+		}
+
+		/// <summary>
+		/// 在文本框按下并释放按键时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnKeyPress( KeyPressEventArgs e )
+		{
+			//去掉系统提示音
+			if ( e.KeyChar == 13 )
+			{
+				e.Handled = true;
+			}
+
+			base.OnKeyPress( e );
+		}
+
+		/// <summary>
+		/// 在文本框按下按键时
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnKeyDown( KeyEventArgs e )
+		{
+			//按上下键时不改变文本框内的光标位置
+			switch ( e.KeyCode )
+			{
+				case Keys.Up:
+				case Keys.Down:
+					e.Handled = true;
+					break;
+			}
+
+			base.OnKeyDown( e );
+		}
+
+		/// <summary>
+		/// 处理针对文本框的系统消息
+		/// </summary>
+		/// <param name="m"></param>
+		protected override void WndProc( ref Message m )
+		{
+			//上下键,回车键,将消息转发到下拉框
+			if ( m.Msg == 0x100 )
+			{
+				switch ( m.WParam.ToInt32() )
+				{
+					case 13:
+					case 38:
+					case 40:
+						if ( this.box.Visible )
+						{
+							WindowsAPI.SendMessage( this.box.Handle, m.Msg, m.WParam, m.LParam );
+						}
+						break;
+				}
+			}
+
+			base.WndProc( ref m );
+		}
+
+		/// <summary>
+		/// 项目匹配事件
+		/// </summary>
+		/// <param name="e"></param>
+		protected virtual void OnMatch( MatchEventArgs e )
+		{
+			if ( this.Match != null )
+			{
+				this.Match( this, e );
+			}
+		}
+
+		//--------------------------------------------------------------------------------
+
+		/// <summary>
+		/// 初始化各参数
+		/// </summary>
+		private void InitControl()
         {
+			this.DropDownOnEnter = false;
+			this.DropDownMinCharLength = 1;
             this.AutoDropWidth = true;
             this.DropHeight = 100;
             this.innerListBox = new ListBox();
@@ -450,8 +500,8 @@ namespace CustomCompleteTextBox
 
             if ( this.Items != null )
             {
-                for ( int i = 0; i < this.Items.Count; i++ )
-                {
+				for ( int i = 0; i < this.Items.Count; i++ )
+				{
                     object obj = this.Items[i];
 
                     if ( obj != null )
@@ -479,15 +529,15 @@ namespace CustomCompleteTextBox
                                 SizeF currentSize = gh.MeasureString( displayText, this.box.Font );
                                 newSize = newSize.Width > currentSize.Width ? newSize : currentSize;
                             }
-                        }
+						}
 
-                        //完全相等
-                        if ( args.EqualResult )
+						//完全相等
+						if ( args.EqualResult )
                         {
                             result.Add( obj );
-                        }
-                    }
-                }
+						}
+					}
+				}
                 
                 this.box.SelectedItem = this.SelectedItem;
             }
