@@ -30,6 +30,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,6 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\ToolBox.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CustomCompleteTextBox.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\CustomCompleteTextBox.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
