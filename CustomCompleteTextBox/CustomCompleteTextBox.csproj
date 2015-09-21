@@ -63,9 +63,9 @@
     <None Include="CustomCompleteTextBox.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt">
+    <None Include="LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Resources\CustomCompleteTextBox.ico" />
     <Content Include="Resources\CustomCompleteTextBox.png" />
   </ItemGroup>

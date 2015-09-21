@@ -16,9 +16,4 @@
     <copyright>Copyright © 2015 blog.itnmg.net</copyright>
 		<tags>CustomCompleteTextBox,Auto,Complete,TextBox,Drop,WinForm,Control,ComboBox</tags>
   </metadata>
-  <files>
-    <file src="bin\Release\CustomCompleteTextBox.dll" target="lib\net45" />
-		<file src="bin\Release\CustomCompleteTextBox.xml" target="lib\net45" />
-		<file src="bin\Release\LICENSE.txt" target="" />
-  </files>
 </package>
