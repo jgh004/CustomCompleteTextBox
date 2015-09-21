@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<metadata>
-		<id>CustomCompleteTextBox</id>
-		<version>1.0.0.0</version>
-		<title>适用于 WinForm 的带下拉列表的自定义搜索文本框控件</title>
-		<authors>ITnmg</authors>
-		<description>适用于 WinForm 的带下拉列表的自定义搜索文本框控件, 支持自定义搜索条件.</description>
-		<language>zh-CN</language>
-		<projectUrl>https://github.com/jgh004/CustomCompleteTextBox</projectUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<developmentDependency>false</developmentDependency>
-		<releaseNotes>支持 .net 4.5 及以上, 如需支持 .net 4.5 以下请自行编译.</releaseNotes>
-		<Copyright>Copyright ©  2015 blog.itnmg.net</Copyright>
-		<IconUrl>https://raw.githubusercontent.com/jgh004/CustomCompleteTextBox/master/CustomCompleteTextBox/Resources/CustomCompleteTextBox.ico</IconUrl>
-		<tags>CustomCompleteTextBox,Auto,Complete,TextBox,Drop,WinForm,Control,ComboBox</tags>
-	</metadata>
-	<files>
-		<file src="F:\CustomCompleteTextBox\CustomCompleteTextBox\bin\Release\CustomCompleteTextBox.dll" target="lib\net45" />
-	</files>
+  <metadata>
+    <id>CustomCompleteTextBox</id>
+    <version>1.0.0.0</version>
+    <title>CustomCompleteTextBox</title>
+    <authors>jgh004</authors>
+    <owners>blog.itnmg.net</owners>
+    <description>适用于 WinForm 的带下拉列表的自定义搜索文本框控件, 支持自定义搜索条件.</description>
+    <language>zh-CN</language>
+    <licenseUrl>http://www.gnu.org/licenses/gpl.html</licenseUrl>
+    <projectUrl>https://github.com/jgh004/CustomCompleteTextBox</projectUrl>
+    <iconUrl>https://github.com/jgh004/CustomCompleteTextBox/blob/master/CustomCompleteTextBox/Resources/CustomCompleteTextBox.png?raw=true</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <developmentDependency>false</developmentDependency>
+    <copyright>Copyright ©  2015 blog.itnmg.net</copyright>
+  </metadata>
+  <files>
+    <file src="F:\CustomCompleteTextBox\CustomCompleteTextBox\bin\Debug\CustomCompleteTextBox.dll" target="lib\net45" />
+  </files>
 </package>
