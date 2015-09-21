@@ -8,7 +8,7 @@
 		<owners>blog.itnmg.net</owners>
 		<licenseUrl>http://www.gnu.org/licenses/gpl.txt</licenseUrl>
 		<projectUrl>https://github.com/jgh004/CustomCompleteTextBox</projectUrl>
-		<iconUrl>https://github.com/jgh004/CustomCompleteTextBox/blob/master/CustomCompleteTextBox/Resources/CustomCompleteTextBox.png</iconUrl>
+		<iconUrl>https://github.com/jgh004/CustomCompleteTextBox/raw/master/CustomCompleteTextBox/Resources/CustomCompleteTextBox.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
 		<copyright>Copyright © 2015 blog.itnmg.net</copyright>
