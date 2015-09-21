@@ -14,4 +14,7 @@
 		<copyright>Copyright © 2015 blog.itnmg.net</copyright>
 		<tags>CustomCompleteTextBox Auto Complete TextBox Drop WinForm Control ComboBox</tags>
 	</metadata>
+	<files>
+		<file src="" exclude="Resources\**\*.*" />
+	</files>
 </package>
